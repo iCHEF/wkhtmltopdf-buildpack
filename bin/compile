@@ -33,7 +33,7 @@ echo "-----> Setting permissions"
 chmod +x $WKHTMLTOPDF_BINARIES/*
 
 echo "-----> Moving binaries to the right place"
-mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
+mv $WKHTMLTOPDF_BINARIES/* /usr/local/bin/
 
 echo "-----> Cleaning up"
 rm -rf $WKHTMLTOPDF_PATH
