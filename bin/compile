@@ -35,6 +35,11 @@ chmod +x $WKHTMLTOPDF_BINARIES/*
 echo "-----> Moving binaries to the right place"
 mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
 
+mkdir -p "$BUILD_DIR"/.profile.d
+cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
+export PATH="\$BIN_PATH:\$PATH"
+EOF
+
 echo "-----> Cleaning up"
 rm -rf $WKHTMLTOPDF_PATH
 
