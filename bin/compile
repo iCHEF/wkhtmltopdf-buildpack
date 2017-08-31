@@ -47,4 +47,4 @@ echo "-----> Installing fonts"
 mkdir -p $1/.fonts
 ls $FONTS_DIR
 cp $FONTS_DIR/* $1/.fonts/
-fc-cache -f $1/.fonts
+fc-cache -fv $1/.fonts
