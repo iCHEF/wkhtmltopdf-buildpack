@@ -6,6 +6,7 @@ testCompile() {
     capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR} ${BUILD_DIR}
 
     assertEquals 0 ${rtrn}
+    assertEquals "" "$(cat ${STD_ERR})"
 }
 
 # testGeneratePdf() {
