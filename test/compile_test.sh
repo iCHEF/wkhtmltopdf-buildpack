@@ -3,9 +3,12 @@
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
 testGramma() {
-    assertEquals 0 "echo 0"
+    p=$(echo 0)
+    assertEquals 0 "$p"
 }
 
 testGeneratePdf() {
-    assertEquals 0 "wkhtmltopdf 'https://www.google.com.tw/' out.pdf && echo 0"
+    compile
+    return=$("wkhtmltopdf 'https://www.google.com.tw/' out.pdf && echo 0")
+    assertEquals 0 "$return"
 }
