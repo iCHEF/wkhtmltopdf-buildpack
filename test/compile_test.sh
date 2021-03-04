@@ -7,13 +7,9 @@ testGramma() {
     assertEquals 0 "$p"
 }
 
-testCompile() {
-    compile
-    assertCapturedSuccess
-}
 
 testGeneratePdf() {
     compile
-    return=$("wkhtmltopdf 'https://www.google.com.tw/' out.pdf && echo 0")
+    return=$(wkhtmltopdf 'https://www.google.com.tw/' out.pdf && echo 0)
     assertEquals 0 "$return"
 }
