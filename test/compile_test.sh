@@ -7,6 +7,11 @@ testGramma() {
     assertEquals 0 "$p"
 }
 
+testDir() {
+    compile
+    data=$(ls -la)
+    assertEquals 0 "$data"
+}
 
 testGeneratePdf() {
     compile
