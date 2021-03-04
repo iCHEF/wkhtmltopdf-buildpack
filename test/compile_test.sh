@@ -7,9 +7,9 @@ testGramma() {
     assertEquals 0 "$p"
 }
 
-testDir() {
+testPwd() {
     compile
-    data=$(ls -la)
+    data=$(pwd)
     assertEquals 0 "$data"
 }
 
