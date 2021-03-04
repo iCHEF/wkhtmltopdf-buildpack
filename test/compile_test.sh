@@ -5,7 +5,7 @@
 testGramma() {
     echo 0
 
-    assertEquals 0 ${rtrn}
+    assertEquals 0 ${RETURN}
     assertEquals "" "$(cat ${STD_ERR})"
 }
 
