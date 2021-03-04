@@ -7,14 +7,17 @@ testGramma() {
     assertEquals 0 "$p"
 }
 
-testPwd() {
-    compile
-    data=$(pwd)
-    assertEquals 0 "$data"
+testCompile() {
+    capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR}
+
+    assertEquals 0 ${rtrn}
+    assertEquals "" "$(cat ${STD_ERR})"
 }
 
 testGeneratePdf() {
-    compile
-    return=$(wkhtmltopdf 'https://www.google.com.tw/' out.pdf && echo 0)
-    assertEquals 0 "$return"
+    ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR}
+
+    capture wkhtmltopdf 'https://www.google.com.tw/' out.pdf
+    assertEquals 0 ${rtrn}
+    assertEquals "" "$(cat ${STD_ERR})"
 }
