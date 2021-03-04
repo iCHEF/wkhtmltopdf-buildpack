@@ -2,11 +2,6 @@
 
 . ${BUILDPACK_TEST_RUNNER_HOME}/lib/test_utils.sh
 
-testGramma() {
-    p=$(echo 0)
-    assertEquals 0 "$p"
-}
-
 testCompile() {
     capture ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR}
 
@@ -14,10 +9,10 @@ testCompile() {
     assertEquals "" "$(cat ${STD_ERR})"
 }
 
-testGeneratePdf() {
-    ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR}
+# testGeneratePdf() {
+#     ${BUILDPACK_HOME}/bin/compile ${BUILD_DIR}
 
-    capture wkhtmltopdf 'https://www.google.com.tw/' out.pdf
-    assertEquals 0 ${rtrn}
-    assertEquals "" "$(cat ${STD_ERR})"
-}
+#     capture wkhtmltopdf 'https://www.google.com.tw/' out.pdf
+#     assertEquals 0 ${rtrn}
+#     assertEquals "" "$(cat ${STD_ERR})"
+# }
