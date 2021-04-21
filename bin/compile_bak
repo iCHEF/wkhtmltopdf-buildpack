@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+set -e
+
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+BIN_PATH="$BUILD_DIR/bin"
+TMP_PATH="$BUILD_DIR/tmp"
+mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
+
+[ -z "$WKHTMLTOPDF_VERSION" ] && WKHTMLTOPDF_VERSION="0.12.4"
+WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/archive/refs/tags/0.12.5.tar.gz"
+WKHTMLTOPDF_TAR="$CACHE_DIR/wkhtmltox.tar.xz"
+WKHTMLTOPDF_PATH="$TMP_PATH/wkhtmltox"
+WKHTMLTOPDF_BINARIES="$WKHTMLTOPDF_PATH/bin"
+
+BIN_DIR=$(cd $(dirname $0); pwd)
+FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
+
+if [ -f $WKHTMLTOPDF_TAR ]; then
+  echo "-----> Using wkhtmltopdf tar from cache"
+else
+  echo "-----> Downloading wkhtmltopdf tar"
+  curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_TAR
+fi
+
+echo "-----> Unpacking tar"
+tar -xf $WKHTMLTOPDF_TAR -C $TMP_PATH
+
+echo "-----> Setting permissions"
+chmod u+x $WKHTMLTOPDF_BINARIES/*
+
+echo "-----> Moving binaries to the right place"
+mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
+
+mkdir -p "$BUILD_DIR"/.profile.d
+cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
+export PATH="/app/bin:\$PATH"
+EOF
+
+echo "-----> Cleaning up"
+rm -rf $WKHTMLTOPDF_PATH
+
+echo "-----> Installing fonts"
+mkdir -p $1/.fonts
+ls $FONTS_DIR
+cp $FONTS_DIR/* $1/.fonts/
+fc-cache -fv $1/.fonts
+
+exit 0
