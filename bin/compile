@@ -39,7 +39,7 @@ fi
 
 WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/${WKHTMLTOPDF_DEB}"
 
-echo -e "${GREEN}-----> Downloading wkhtmltopdf tar${WHITE}"
+echo -e "${GREEN}-----> Downloading wkhtmltopdf deb${WHITE}"
 wget $WKHTMLTOPDF_URL
 
 echo -e "${GREEN}-----> Install wkhtmltopdf${WHITE}"
