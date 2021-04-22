@@ -8,6 +8,8 @@ RUN curl --silent https://storage.googleapis.com/google-code-archive-downloads/v
 
 ENV SHUNIT_HOME /usr/local/lib/shunit2-2.1.6
 
+# content in directory testrunner is copy from https://github.com/heroku/heroku-buildpack-testrunner
+# it provide utils to run test of this project
 ADD testrunner/bin /app/testrunner/bin
 ADD testrunner/lib /app/testrunner/lib
 
