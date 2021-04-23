@@ -4,6 +4,8 @@ sync-lib-and-bin-from-testrunner:
 	# usage:
 	#   cd ../ && git clone https://github.com/heroku/heroku-buildpack-testrunner
 	# 	make sync-lib-and-bin-from-testrunner testrunner-dir=../heroku-buildpack-testrunner
+	mkdir -p ${current_dir}/testrunner
+
 	rm -rf ${current_dir}/testrunner/lib
 	cp -rf ${testrunner-dir}/lib ${current_dir}/testrunner/lib
 
