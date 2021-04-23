@@ -3,6 +3,10 @@
 
 set -e
 
+WHITE="\e[97m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+
 BUILD_DIR=$1
 CACHE_DIR=$2
 
@@ -11,40 +15,45 @@ TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
 
 [ -z "$WKHTMLTOPDF_VERSION" ] && WKHTMLTOPDF_VERSION="0.12.4"
-WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-generic-amd64.tar.xz"
-WKHTMLTOPDF_TAR="$CACHE_DIR/wkhtmltox.tar.xz"
-WKHTMLTOPDF_PATH="$TMP_PATH/wkhtmltox"
-WKHTMLTOPDF_BINARIES="$WKHTMLTOPDF_PATH/bin"
 
 BIN_DIR=$(cd $(dirname $0); pwd)
 FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 
-if [ -f $WKHTMLTOPDF_TAR ]; then
-  echo "-----> Using wkhtmltopdf tar from cache"
+echo -e "${GREEN}-----> OS${WHITE}"
+echo $OSTYPE
+echo $(cat /etc/os-release | grep VERSION_CODENAME)
+
+OS_VERSIONCODE=$(cat /etc/os-release | grep VERSION_CODENAME)
+
+if [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=focal"* ]]; then
+    # focal is codename of ubuntu 20
+    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.focal_amd64.deb"
+elif [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=xenial"* ]]; then
+    # install wkhtmltopdf for ubuntu 16
+    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
 else
-  echo "-----> Downloading wkhtmltopdf tar"
-  curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_TAR
+    # default version is for ubuntu 16
+    echo -e "${YELLOW}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
+    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
 fi
 
-echo "-----> Unpacking tar"
-tar -xf $WKHTMLTOPDF_TAR -C $TMP_PATH
+WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/${WKHTMLTOPDF_DEB}"
 
-echo "-----> Setting permissions"
-chmod +x $WKHTMLTOPDF_BINARIES/*
+echo -e "${GREEN}-----> Downloading wkhtmltopdf deb${WHITE}"
+wget $WKHTMLTOPDF_URL
 
-echo "-----> Moving binaries to the right place"
-mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
+echo -e "${GREEN}-----> Install wkhtmltopdf${WHITE}"
+apt update
+yes | apt install xfonts-75dpi xfonts-base
+yes | dpkg -i ./$WKHTMLTOPDF_DEB
 
-mkdir -p "$BUILD_DIR"/.profile.d
-cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
-export PATH="/app/bin:\$PATH"
-EOF
+echo -e "${GREEN}-----> Cleaning up${WHITE}"
+rm -rf $WKHTMLTOPDF_DEB
 
-echo "-----> Cleaning up"
-rm -rf $WKHTMLTOPDF_PATH
-
-echo "-----> Installing fonts"
+echo -e "${GREEN}-----> Installing fonts${WHITE}"
 mkdir -p $1/.fonts
 ls $FONTS_DIR
 cp $FONTS_DIR/* $1/.fonts/
 fc-cache -fv $1/.fonts
+
+exit 0
