@@ -28,6 +28,6 @@ prepare-testrunner-image:
 		--build-arg ubuntu_version=20
 
 docker-test:
-	# usgae
-	#	make docker-test image=heroku-20-buildpack-test-runner
+	# usage
+	# make docker-test image=heroku-20-buildpack-test-runner
 	docker run -it -v $(current_dir):/app/buildpack:ro ${image}
