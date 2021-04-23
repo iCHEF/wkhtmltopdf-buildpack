@@ -5,7 +5,7 @@ set -e
 
 WHITE="\e[97m"
 GREEN="\e[32m"
-YELLOE="\e[33m"
+YELLOW="\e[33m"
 
 BUILD_DIR=$1
 CACHE_DIR=$2
@@ -33,7 +33,7 @@ elif [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=xenial"* ]]; then
     WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
 else
     # default version is for ubuntu 16
-    echo -e "${YELLOE}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
+    echo -e "${YELLOW}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
     WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
 fi
 
