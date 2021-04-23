@@ -1,0 +1,17 @@
+ARG ubuntu_version
+
+FROM heroku/heroku:$ubuntu_version
+
+WORKDIR /usr/local/lib
+
+RUN curl --silent https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/shunit2/shunit2-2.1.6.tgz | tar xz
+
+ENV SHUNIT_HOME /usr/local/lib/shunit2-2.1.6
+
+# content in directory testrunner is copy from https://github.com/heroku/heroku-buildpack-testrunner
+# it provide utils to run test of this project
+ADD testrunner/bin /app/testrunner/bin
+ADD testrunner/lib /app/testrunner/lib
+
+CMD ["-c", "/app/buildpack"]
+ENTRYPOINT ["/app/testrunner/bin/run"]
