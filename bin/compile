@@ -7,6 +7,11 @@ WHITE="\e[97m"
 GREEN="\e[32m"
 YELLOW="\e[33m"
 
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+set -e
+
 BUILD_DIR=$1
 CACHE_DIR=$2
 
@@ -14,46 +19,52 @@ BIN_PATH="$BUILD_DIR/bin"
 TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
 
-[ -z "$WKHTMLTOPDF_VERSION" ] && WKHTMLTOPDF_VERSION="0.12.4"
+
+if [ "$STACK" == "cedar-14" ]; then
+  UBUNTU_VERSION="trusty"
+elif [ "$STACK" == "heroku-16" ]; then
+  UBUNTU_VERSION="xenial"
+else
+  UBUNTU_VERSION="bionic"
+fi
+
+WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.${UBUNTU_VERSION}_amd64.deb"
+WKHTMLTOPDF_PKG="$CACHE_DIR/wkhtmltopdf.deb"
+WKHTMLTOPDF_PATH="$TMP_PATH/wkhtmltopdf"
+WKHTMLTOPDF_BINARIES="$WKHTMLTOPDF_PATH/usr/local/bin"
 
 BIN_DIR=$(cd $(dirname $0); pwd)
 FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 
-echo -e "${GREEN}-----> OS${WHITE}"
-echo $OSTYPE
-echo $(cat /etc/os-release | grep VERSION_CODENAME)
-
-OS_VERSIONCODE=$(cat /etc/os-release | grep VERSION_CODENAME)
-
-if [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=focal"* ]]; then
-    # focal is codename of ubuntu 20
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.focal_amd64.deb"
-elif [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=xenial"* ]]; then
-    # install wkhtmltopdf for ubuntu 16
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
+if [ -f $WKHTMLTOPDF_PKG ]; then
+  echo "-----> Using wkhtmltopdf Debian package from cache"
 else
-    # default version is for ubuntu 16
-    echo -e "${YELLOW}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
+  echo "-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL}"
+  curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 fi
 
-WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/${WKHTMLTOPDF_DEB}"
+echo "-----> Unpacking Debian package"
+dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
 
-echo -e "${GREEN}-----> Downloading wkhtmltopdf deb${WHITE}"
-wget $WKHTMLTOPDF_URL
+echo "-----> Setting permissions"
+chmod +x $WKHTMLTOPDF_BINARIES/*
 
-echo -e "${GREEN}-----> Install wkhtmltopdf${WHITE}"
-apt update
-yes | apt install xfonts-75dpi xfonts-base
-yes | dpkg -i ./$WKHTMLTOPDF_DEB
+echo "-----> Moving binaries to the right place"
+mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
 
-echo -e "${GREEN}-----> Cleaning up${WHITE}"
-rm -rf $WKHTMLTOPDF_DEB
+echo "-----> Removing wkhtmltoimage binary"
+rm -rf "$BIN_PATH/wkhtmltoimage"
 
-echo -e "${GREEN}-----> Installing fonts${WHITE}"
+echo $(pwd)
+echo $(ls)
+
+echo $(ls $BIN_PATH)
+
+echo "-----> Cleaning up"
+rm -rf $WKHTMLTOPDF_PATH
+
+echo "-----> Installing fonts"
 mkdir -p $1/.fonts
 ls $FONTS_DIR
 cp $FONTS_DIR/* $1/.fonts/
-fc-cache -fv $1/.fonts
-
-exit 0
+fc-cache -f $1/.fonts
