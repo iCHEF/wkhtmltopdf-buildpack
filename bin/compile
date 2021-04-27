@@ -55,10 +55,10 @@ mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
 echo "-----> Removing wkhtmltoimage binary"
 rm -rf "$BIN_PATH/wkhtmltoimage"
 
-echo $(pwd)
-echo $(ls)
-
-echo $(ls $BIN_PATH)
+mkdir -p "$BUILD_DIR"/.profile.d
+cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
+export PATH="/app/bin:\$PATH"
+EOF
 
 echo "-----> Cleaning up"
 rm -rf $WKHTMLTOPDF_PATH
