@@ -14,13 +14,18 @@ BIN_PATH="$BUILD_DIR/bin"
 TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
 
+OS_VERSIONCODE=$(cat /etc/os-release | grep VERSION_CODENAME)
 
-if [ "$STACK" == "cedar-14" ]; then
-  UBUNTU_VERSION="trusty"
-elif [ "$STACK" == "heroku-16" ]; then
-  UBUNTU_VERSION="xenial"
+if [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=focal"* ]]; then
+    # focal is codename of ubuntu 20
+    UBUNTU_VERSION="focal"
+elif [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=xenial"* ]]; then
+    # install wkhtmltopdf for ubuntu 16
+    UBUNTU_VERSION="xenial"
 else
-  UBUNTU_VERSION="bionic"
+    # default version is for ubuntu 16
+    echo -e "${YELLOW}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
+    UBUNTU_VERSION="xenial"
 fi
 
 WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.${UBUNTU_VERSION}_amd64.deb"
@@ -32,33 +37,34 @@ BIN_DIR=$(cd $(dirname $0); pwd)
 FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 
 if [ -f $WKHTMLTOPDF_PKG ]; then
-  echo "-----> Using wkhtmltopdf Debian package from cache"
+  echo -e "${GREEN}-----> Using wkhtmltopdf Debian package from cache${WHITE}"
 else
-  echo "-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL}"
+  echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
   curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 fi
 
-echo "-----> Unpacking Debian package"
+echo -e "${GREEN}-----> Unpacking Debian package${WHITE}"
 dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
 
-echo "-----> Setting permissions"
+echo -e "${GREEN}-----> Setting permissions"
 chmod +x $WKHTMLTOPDF_BINARIES/*
 
-echo "-----> Moving binaries to the right place"
+echo -e "${GREEN}-----> Moving binaries to the right place${WHITE}"
 mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
 
-echo "-----> Removing wkhtmltoimage binary"
+echo -e "${GREEN}-----> Removing wkhtmltoimage binary${WHITE}"
 rm -rf "$BIN_PATH/wkhtmltoimage"
 
+echo -e "${GREEN}-----> Setting Continer Start script in $BUILD_DIR/.profile.d${WHITE}"
 mkdir -p "$BUILD_DIR"/.profile.d
 cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
 export PATH="/app/bin:\$PATH"
 EOF
 
-echo "-----> Cleaning up"
+echo -e "${GREEN}-----> Cleaning up${WHITE}"
 rm -rf $WKHTMLTOPDF_PATH
 
-echo "-----> Installing fonts"
+echo -e "${GREEN}-----> Installing fonts${WHITE}"
 mkdir -p $1/.fonts
 ls $FONTS_DIR
 cp $FONTS_DIR/* $1/.fonts/
