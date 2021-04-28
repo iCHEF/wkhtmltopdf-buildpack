@@ -49,18 +49,6 @@ dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
 echo -e "${GREEN}-----> Setting permissions"
 chmod +x $WKHTMLTOPDF_BINARIES/*
 
-echo -e "${GREEN}-----> Moving binaries to the right place${WHITE}"
-mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
-
-echo -e "${GREEN}-----> Removing wkhtmltoimage binary${WHITE}"
-rm -rf "$BIN_PATH/wkhtmltoimage"
-
-echo -e "${GREEN}-----> Setting Continer Start script in $BUILD_DIR/.profile.d${WHITE}"
-mkdir -p "$BUILD_DIR"/.profile.d
-cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
-export PATH="/app/bin:\$PATH"
-EOF
-
 echo -e "${GREEN}-----> Cleaning up${WHITE}"
 rm -rf $WKHTMLTOPDF_PATH
 
