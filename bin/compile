@@ -12,9 +12,9 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 
 BIN_PATH="$BUILD_DIR/bin"
-LIB_PATH="$BUILD_DIR/lib"
+LIB_PATH="$BUILD_DIR/vendor/wkhtmltox/lib"
 TMP_PATH="$BUILD_DIR/tmp"
-mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
+mkdir -p $CACHE_DIR $BIN_PATH $LIB_PATH $TMP_PATH
 
 OS_VERSIONCODE=$(cat /etc/os-release | grep VERSION_CODENAME)
 
