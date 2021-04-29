@@ -53,8 +53,8 @@ curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 # LIBPNG12_PATH="$TMP_PATH/libpng12"
 # LIBPNG12_BINARY="$LIBPNG12_PATH/usr/lib/x86_64-linux-gnu"
 
-echo -e "${CYAN} Downloading libpng from ${LIBPNG12_URL} ${WHITE}"
-curl -L $LIBPNG12_URL -o $LIBPNG12_PKG
+# echo -e "${CYAN} Downloading libpng from ${LIBPNG12_URL} ${WHITE}"
+# curl -L $LIBPNG12_URL -o $LIBPNG12_PKG
 
 echo -e "${GREEN}-----> Unpacking Debian package${WHITE}"
 dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
