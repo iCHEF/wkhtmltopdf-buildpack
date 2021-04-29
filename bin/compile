@@ -6,7 +6,6 @@ set -e
 WHITE="\e[97m"
 GREEN="\e[32m"
 YELLOW="\e[33m"
-CYAN="\e[36m"
 
 BUILD_DIR=$1
 CACHE_DIR=$2
