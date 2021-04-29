@@ -12,7 +12,7 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 
 BIN_PATH="$BUILD_DIR/.wkhtmltopdf/bin"
-LIB_PATH="$BUILD_DIR/.wkhtmltopdf/lib"
+# LIB_PATH="$BUILD_DIR/.wkhtmltopdf/lib"
 TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $LIB_PATH $TMP_PATH
 
@@ -48,24 +48,24 @@ FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
 curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 
-LIBPNG12_URL='https://launchpad.net/~ubuntu-security/+archive/ubuntu/ppa/+build/15108504/+files/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb'
-LIBPNG12_PKG="$CACHE_DIR/libpng12.deb"
-LIBPNG12_PATH="$TMP_PATH/libpng12"
-LIBPNG12_BINARY="$LIBPNG12_PATH/usr/lib/x86_64-linux-gnu"
+# LIBPNG12_URL='https://launchpad.net/~ubuntu-security/+archive/ubuntu/ppa/+build/15108504/+files/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb'
+# LIBPNG12_PKG="$CACHE_DIR/libpng12.deb"
+# LIBPNG12_PATH="$TMP_PATH/libpng12"
+# LIBPNG12_BINARY="$LIBPNG12_PATH/usr/lib/x86_64-linux-gnu"
 
 echo -e "${CYAN} Downloading libpng from ${LIBPNG12_URL} ${WHITE}"
 curl -L $LIBPNG12_URL -o $LIBPNG12_PKG
 
 echo -e "${GREEN}-----> Unpacking Debian package${WHITE}"
 dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
-dpkg -x $LIBPNG12_PKG $LIBPNG12_PATH
+# dpkg -x $LIBPNG12_PKG $LIBPNG12_PATH
 
 echo -e "${GREEN}-----> Setting permissions"
 chmod +x $WKHTMLTOPDF_BINARIES/*
 
 echo -e "${GREEN}-----> Moving binaries to the right place${WHITE}"
 mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
-mv $LIBPNG12_BINARY/libpng12.so.0 $LIB_PATH/libpng12.so.0
+# mv $LIBPNG12_BINARY/libpng12.so.0 $LIB_PATH/libpng12.so.0
 
 echo -e "${GREEN}-----> Removing wkhtmltoimage binary${WHITE}"
 rm -rf "$BIN_PATH/wkhtmltoimage"
@@ -74,12 +74,13 @@ echo -e "${GREEN}-----> Setting Continer Start script in $BUILD_DIR/.profile.d${
 mkdir -p "$BUILD_DIR"/.profile.d
 cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
 export PATH="/app/.wkhtmltopdf/bin:\$PATH"
-export LD_LIBRARY_PATH="/app/.wkhtmltopdf/lib:\$LD_LIBRARY_PATH"
 EOF
+
+# export LD_LIBRARY_PATH="/app/.wkhtmltopdf/lib:\$LD_LIBRARY_PATH"
 
 echo -e "${GREEN}-----> Cleaning up${WHITE}"
 rm -rf $WKHTMLTOPDF_PATH
-rm -rf $LIBPNG12_PATH
+# rm -rf $LIBPNG12_PATH
 
 echo -e "${GREEN}-----> Installing fonts${WHITE}"
 mkdir -p $1/.fonts
