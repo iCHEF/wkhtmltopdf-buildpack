@@ -11,8 +11,8 @@ CYAN="\e[36m"
 BUILD_DIR=$1
 CACHE_DIR=$2
 
-BIN_PATH="$BUILD_DIR/bin"
-LIB_PATH="$BUILD_DIR/.heroku/vendor/lib"
+BIN_PATH="$BUILD_DIR/.wkhtmltopdf/bin"
+LIB_PATH="$BUILD_DIR/.wkhtmltopdf/lib"
 TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $LIB_PATH $TMP_PATH
 
@@ -73,8 +73,8 @@ rm -rf "$BIN_PATH/wkhtmltoimage"
 echo -e "${GREEN}-----> Setting Continer Start script in $BUILD_DIR/.profile.d${WHITE}"
 mkdir -p "$BUILD_DIR"/.profile.d
 cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
-export PATH="/app/bin:\$PATH"
-export LD_LIBRARY_PATH="/app/vendor/wkhtmltox/lib:\$LD_LIBRARY_PATH"
+export PATH="/app/.wkhtmltopdf/bin:\$PATH"
+export LD_LIBRARY_PATH="/app/.wkhtmltopdf/lib:\$LD_LIBRARY_PATH"
 EOF
 
 echo -e "${GREEN}-----> Cleaning up${WHITE}"
