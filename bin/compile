@@ -38,12 +38,15 @@ WKHTMLTOPDF_BINARIES="$WKHTMLTOPDF_PATH/usr/local/bin"
 BIN_DIR=$(cd $(dirname $0); pwd)
 FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 
-if [ -f $WKHTMLTOPDF_PKG ]; then
-  echo -e "${GREEN}-----> Using wkhtmltopdf Debian package from cache${WHITE}"
-else
-  echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
-  curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
-fi
+# if [ -f $WKHTMLTOPDF_PKG ]; then
+#   echo -e "${GREEN}-----> Using wkhtmltopdf Debian package from cache${WHITE}"
+# else
+#   echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
+#   curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
+# fi
+
+echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
+curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 
 LIBPNG12_URL='https://launchpad.net/~ubuntu-security/+archive/ubuntu/ppa/+build/15108504/+files/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb'
 LIBPNG12_PKG="$CACHE_DIR/libpng12.deb"
