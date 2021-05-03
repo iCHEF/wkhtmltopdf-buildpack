@@ -43,9 +43,6 @@ else
   curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
 fi
 
-echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
-curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
-
 echo -e "${GREEN}-----> Unpacking Debian package${WHITE}"
 dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
 
