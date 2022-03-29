@@ -10,50 +10,62 @@ YELLOW="\e[33m"
 BUILD_DIR=$1
 CACHE_DIR=$2
 
-BIN_PATH="$BUILD_DIR/bin"
+BIN_PATH="$BUILD_DIR/.wkhtmltopdf/bin"
 TMP_PATH="$BUILD_DIR/tmp"
 mkdir -p $CACHE_DIR $BIN_PATH $TMP_PATH
-
-[ -z "$WKHTMLTOPDF_VERSION" ] && WKHTMLTOPDF_VERSION="0.12.4"
-
-BIN_DIR=$(cd $(dirname $0); pwd)
-FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
-
-echo -e "${GREEN}-----> OS${WHITE}"
-echo $OSTYPE
-echo $(cat /etc/os-release | grep VERSION_CODENAME)
 
 OS_VERSIONCODE=$(cat /etc/os-release | grep VERSION_CODENAME)
 
 if [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=focal"* ]]; then
     # focal is codename of ubuntu 20
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.focal_amd64.deb"
+    UBUNTU_VERSION="focal"
 elif [[ "$OS_VERSIONCODE" == *"VERSION_CODENAME=xenial"* ]]; then
     # install wkhtmltopdf for ubuntu 16
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
+    UBUNTU_VERSION="xenial"
 else
     # default version is for ubuntu 16
     echo -e "${YELLOW}WARNING: ${OS_VERSIONCODE} not supported, install default wkhtmltopdf deb for Ubuntu 16${WHITE}"
-    WKHTMLTOPDF_DEB="wkhtmltox_0.12.5-1.xenial_amd64.deb"
+    UBUNTU_VERSION="xenial"
 fi
 
-WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/${WKHTMLTOPDF_DEB}"
+WKHTMLTOPDF_URL="https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.${UBUNTU_VERSION}_amd64.deb"
+WKHTMLTOPDF_PKG="$CACHE_DIR/wkhtmltopdf-${OS_VERSIONCODE}.deb"
+WKHTMLTOPDF_PATH="$TMP_PATH/wkhtmltopdf"
+WKHTMLTOPDF_BINARIES="$WKHTMLTOPDF_PATH/usr/local/bin"
 
-echo -e "${GREEN}-----> Downloading wkhtmltopdf deb${WHITE}"
-wget $WKHTMLTOPDF_URL
+BIN_DIR=$(cd $(dirname $0); pwd)
+FONTS_DIR=$(cd "$BIN_DIR/../fonts"; pwd)
 
-echo -e "${GREEN}-----> Install wkhtmltopdf${WHITE}"
-apt update
-yes | apt install xfonts-75dpi xfonts-base
-yes | dpkg -i ./$WKHTMLTOPDF_DEB
+if [ -f $WKHTMLTOPDF_PKG ]; then
+  echo -e "${GREEN}-----> Using wkhtmltopdf Debian package from cache (${WKHTMLTOPDF_PKG}) ${WHITE}"
+else
+  echo -e "${GREEN}-----> Downloading wkhtmltopdf Debian package from ${WKHTMLTOPDF_URL} ${WHITE}"
+  curl -L $WKHTMLTOPDF_URL -o $WKHTMLTOPDF_PKG
+fi
+
+echo -e "${GREEN}-----> Unpacking Debian package${WHITE}"
+dpkg -x $WKHTMLTOPDF_PKG $WKHTMLTOPDF_PATH
+
+echo -e "${GREEN}-----> Setting permissions"
+chmod +x $WKHTMLTOPDF_BINARIES/*
+
+echo -e "${GREEN}-----> Moving binaries to the right place${WHITE}"
+mv $WKHTMLTOPDF_BINARIES/* $BIN_PATH/
+
+echo -e "${GREEN}-----> Removing wkhtmltoimage binary${WHITE}"
+rm -rf "$BIN_PATH/wkhtmltoimage"
+
+echo -e "${GREEN}-----> Setting Continer Start script in $BUILD_DIR/.profile.d${WHITE}"
+mkdir -p "$BUILD_DIR"/.profile.d
+cat <<EOF >"$BUILD_DIR"/.profile.d/wkhtmltopdf.sh
+export PATH="/app/.wkhtmltopdf/bin:\$PATH"
+EOF
 
 echo -e "${GREEN}-----> Cleaning up${WHITE}"
-rm -rf $WKHTMLTOPDF_DEB
+rm -rf $WKHTMLTOPDF_PATH
 
 echo -e "${GREEN}-----> Installing fonts${WHITE}"
 mkdir -p $1/.fonts
 ls $FONTS_DIR
 cp $FONTS_DIR/* $1/.fonts/
-fc-cache -fv $1/.fonts
-
-exit 0
+fc-cache -f $1/.fonts
